@@ -92,14 +92,18 @@ new Vue({
     //  const app =   fb.initializeApp(firebaseConfig);
     //   app.storage();
 
-    fb.auth().onAuthStateChanged(user => { 
+     fb.auth().onAuthStateChanged(user => { 
       if (user) {
         this.$store.dispatch('autoLoginUser', user)
+        return
       }
+      this.$store.dispatch('setUserChecked', true)
+      
+
     })
+
  
 
-    this.$store.dispatch('fetchAds')
 
   }
 }).$mount('#app')

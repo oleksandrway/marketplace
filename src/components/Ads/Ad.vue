@@ -48,6 +48,9 @@ export default {
       return this.$store.getters.adById(id);
     },
     isOwner() {
+      if(!this.$store.getters.user) {
+        return false
+      }
       return this.ad.ownerId === this.$store.getters.user.id;
     },
     ...mapGetters("shared", ["loading"]),

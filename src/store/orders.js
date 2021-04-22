@@ -1,4 +1,4 @@
-import  fb from 'firebase/app';
+import fb from 'firebase/app';
 
 class Order {
   constructor(name, phone, adId, done = false, id = null) {
@@ -11,35 +11,41 @@ class Order {
 }
 export default {
   state: {
-    orders:[]
+    orders: []
   },
   mutations: {
-    loadOrders(state,payload) {
+    loadOrders(state, payload) {
       state.orders = payload
     }
   },
   actions: {
-    async createOrder({commit}, {name, phone, adId, ownerId}) {
-      const order = new Order(name, phone,adId)
+    async createOrder({ commit }, { name, phone, adId, ownerId }) {
+      const order = new Order(name, phone, adId)
       commit('shared/clearError')
 
       try {
         await fb.database().ref(`/users/${ownerId}/orders`).push(order)
       } catch (error) {
-        commit ('shared/setError', error.message)
+        commit('shared/setError', error)
         throw error
       }
     },
 
-    async fetchOrders({commit, getters}) {
-      commit('shared/setLoading', true) 
+    async fetchOrders({ commit, getters }) {
+      commit('shared/setLoading', true)
       commit('shared/clearError')
 
       const resultOrders = []
 
-      try { 
-        const fbVal  = await fb.database().ref(`/users/${getters.user.id}/orders`).once('value')
-        const orders = fbVal.val() 
+      try {
+        const fbVal = await fb.database().ref(`/users/${getters.user.id}/orders`).once('value')
+        const orders = fbVal.val()
+
+        if (!orders) {
+          commit('shared/setLoading', false)
+
+          return
+        }
 
         Object.keys(orders).forEach(key => {
           const o = orders[key]
@@ -49,23 +55,24 @@ export default {
         })
 
         commit('loadOrders', resultOrders)
-        commit('shared/setLoading', false)
-      } catch(error) {
-        commit('shared/setLoading', false)
-        commit('shared/setError', error.message)
+      } catch (error) {
+        console.log(error);
+        commit('shared/setError', error)
       }
+
+      commit('shared/setLoading', false)
+
     },
 
-    async markOrderDone({commit, getters}, payload) {
+    async markOrderDone({ commit, getters }, payload) {
       commit('shared/clearError')
-      console.log(getters.user.id);
 
-      try{
-          await fb.database().ref(`/users/${getters.user.id}/orders`).child(payload).update({
-            done:true
-          })
-      } catch(error) {
-        commit('shared/setError', error.message)
+      try {
+        await fb.database().ref(`/users/${getters.user.id}/orders`).child(payload).update({
+          done: true
+        })
+      } catch (error) {
+        commit('shared/setError', error)
         throw error
       }
     }
@@ -81,7 +88,7 @@ export default {
       return state.orders.filter(o => !o.done)
 
     },
-    orders( state, getters) {
+    orders(state, getters) {
       return getters.undoneOrders.concat(getters.doneOrders)
     }
   }

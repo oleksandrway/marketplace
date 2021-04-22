@@ -57,8 +57,8 @@ import {mapGetters} from 'vuex';
 export default {
   data() {
     return {
-      email: "",
-      password: "",
+      email: "dsf@fdjs.co",
+      password: "dsf@fdjs.co",
       valid: false,
       emailRules: [
         (v) => !!v || "E-mail is required",

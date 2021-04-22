@@ -8,13 +8,19 @@ class User {
   }
 }
 
+
 export default {
   state: {
-    user: null
+    user: null,
+    userChecked: false
   },
   mutations: {
     setUser(state, payLoad) {
       state.user = payLoad
+     
+    } ,
+    userChecked(state, payLoad) {
+      state.userChecked = payLoad
     }
   },
   actions: {
@@ -23,15 +29,18 @@ export default {
       dispatch('shared/setLoading', true)
 
       try {
-        const user = await fb.auth().createUserWithEmailAndPassword(email, password)
+        const response = await fb.auth().createUserWithEmailAndPassword(email, password)
+        const user = response.user
         commit('setUser', new User(user.uid))
         dispatch('shared/setLoading', false)
+        dispatch('fetchAds')
 
       } catch (error) {
         dispatch('shared/setLoading', false)
-        dispatch('shared/setError', error.message)
+        dispatch('shared/setError', error)
         throw error
       }
+
       // .then(user => {
       //   dispatch('setUser', new User(user.uid))
       // dispatch('setLoading', false)
@@ -39,25 +48,34 @@ export default {
       // })
       // .catch(error => {
       // dispatch('setLoading', false)
-      // dispatch('setError', error.message)
+      // dispatch('setError', error)
       // })
     },
     async LoginUser({ dispatch, commit }, { email, password }) {
       dispatch('shared/clearError')
       dispatch('shared/setLoading', true)
       try {
-        const user = await fb.auth().signInWithEmailAndPassword(email, password)
+        const response = await fb.auth().signInWithEmailAndPassword(email, password)
+        const user = response.user
         commit('setUser', new User(user.uid))
+       
         dispatch('shared/setLoading', false)
+        dispatch('fetchAds')
+
       } catch (error) {
         dispatch('shared/setLoading', false)
-        dispatch('shared/setError', error.message)
+        dispatch('shared/setError', error)
         throw error
 
       }
     },
     autoLoginUser({ commit }, payLoad) {
       commit('setUser', new User(payLoad.uid))
+      commit('userChecked', true)
+
+    },
+    setUserChecked({commit}, payLoad) {
+      commit('userChecked', true)
     },
     logoutUser({ commit }) {
       fb.auth().signOut()
@@ -66,6 +84,8 @@ export default {
   },
   getters: {
     user(state) {
+
+
       return state.user
     },
     isUserLoggedIn(state) {

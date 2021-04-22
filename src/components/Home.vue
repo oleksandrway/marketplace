@@ -104,14 +104,14 @@ export default {
 };
 </script>
 
-<style scoped>
-.car-link {
-  position: absolute;
-  bottom: 50px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.4);
-  padding: 5px 7px;
-  border-radius: 5px 5px 0 0;
-}
+<style scoped lang="sass">
+.car-link 
+  position: absolute
+  bottom: 50px
+  left: 50%
+  transform: translateX(-50%)
+  background: rgba(0, 0, 0, 0.4)
+  padding: 5px 7px
+  border-radius: 5px 5px 0 0
+
 </style>

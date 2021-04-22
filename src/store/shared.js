@@ -1,7 +1,7 @@
 export default {
   namespaced:true,
 state: {
-  loading: false,
+  loading: true,   // має бути false just test
   error: null
 },
 mutations: {
@@ -25,7 +25,9 @@ actions: {
 
   },
   setError({commit} , payLoad) {
-    commit('setError', payLoad)
+    commit('setError', payLoad.message)
+    console.log(payLoad);
+
 
   },
   clearError({commit}) {

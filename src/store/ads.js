@@ -99,11 +99,9 @@ export default {
 
         const ad = await fb.database().ref('ads').push(newAd)
         const imageExt = image.name.slice(image.name.lastIndexOf('.'))
-        console.log(imageExt);
 
 
         const fileData = await fb.storage().ref(`ads/${ad.key}${imageExt}`).put(image)
-        console.log(fileData);
 
         const imageSrc = await fileData.ref.getDownloadURL()
         // const imageSrc = fb.storage().ref().child("ads/MY-ZqBYtTolBwAaY8g2.png")
@@ -111,7 +109,6 @@ export default {
 
 
         // const imageSrc = 'https://firebasestorage.googleapis.com/v0/b/itc-ads-35309.appspot.com/o/ads%2F-MY9_FAsLkHn1CnBKUam.png?alt=media&token=d226e336-2770-41b9-8fcb-ab117d849e47'
-       console.log(imageSrc);
 
         await fb.database().ref('ads').child(ad.key).update({
           imageSrc 
@@ -119,7 +116,7 @@ export default {
 
 
 
-          commit('setLoading', false)
+          commit('shared/setLoading', false)
         commit ('createAd', {
           ...newAd ,
           id: ad.key,
@@ -127,9 +124,9 @@ export default {
 
         })
       } catch (error) {
-        commit('shared/setError', error.message)
+        commit('shared/setError', error)
 
-        console.log(error.message);
+        console.log(error);
         console.log(error);
 
         commit('shared/setLoading', false)
@@ -160,7 +157,7 @@ export default {
         commit('shared/setLoading', false)
 
       } catch(error) {
-        commit('shared/setError' , error.message)
+        commit('shared/setError' , error)
         commit('shared/setLoading', false)
         throw error
       }
@@ -182,7 +179,7 @@ export default {
 
           commit('shared/setLoading', false) 
       } catch (error) {
-        commit('shared/setError',  error.message) 
+        commit('shared/setError',  error) 
         commit('shared/setLoading', false) 
         throw error
       }

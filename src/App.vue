@@ -14,7 +14,7 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item @click="onLogout" v-if="isUserLoggedIn">
+        <v-list-item @click="onLogout" v-if="userChecked && user">
           <v-list-item-action>
             <v-icon> mdi-logout </v-icon>
           </v-list-item-action>
@@ -62,7 +62,7 @@
           class="hidden-sm-and-down"
           @click="onLogout"
           text
-          v-if="isUserLoggedIn"
+          v-if="userChecked && user"
         >
           <v-icon left>mdi-logout</v-icon>
           logout
@@ -94,31 +94,44 @@
 </template>
 
 <script>
-
-import {mapState, mapGetters} from 'vuex'
-
+import { mapState } from "vuex";
 
 export default {
+  created() {
+    this.$store.dispatch("fetchAds");
+  },
   data() {
     return {
       drawer: false,
     };
   },
 
-  computed:
-   {
+  computed: {
     // error() {
     //   // return this.$store.getters["shared/error"];
-      
+
     // },
-    ...mapState('shared', ['error']),
+    ...mapState("shared", ["error"]),
+    // ...mapState( ['user.user', 'userChecked']),
+    ...mapState({
+      user(state) {
+        return state.user.user;
+      },
+      userChecked(state) {
+        return state.user.userChecked;
+      },
+    }),
 
     // isUserLoggedIn() {
     //   return this.$store.getters.isUserLoggedIn;
     // },
-    ...mapGetters(['isUserLoggedIn']),
+    // ...mapGetters(['isUserLoggedIn']),
     links() {
-      if (this.isUserLoggedIn) {
+
+      if(!this.userChecked) {
+        return []
+      }
+      if ( this.user) {
         return [
           { title: "Orders", icon: "bookmark-outline", url: "/orders" },
           { title: "New ad", icon: "file-plus", url: "/new" },
@@ -126,10 +139,13 @@ export default {
         ];
       }
 
-      return [
-        { title: "login", icon: "lock", url: "/login" },
-        { title: "Registration", icon: "face", url: "/registration" },
-      ];
+      
+        return [
+          { title: "login", icon: "lock", url: "/login" },
+          { title: "Registration", icon: "face", url: "/registration" },
+        ];
+      
+      
     },
   },
   methods: {
@@ -138,7 +154,9 @@ export default {
     },
     onLogout() {
       this.$store.dispatch("logoutUser");
-      this.$router.push("/");
+      if(this.$route.path !== "/") {
+        this.$router.push("/");
+      }
     },
   },
 };
